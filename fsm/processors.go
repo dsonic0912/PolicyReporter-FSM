@@ -222,7 +222,10 @@ type ValidatingProcessor[Q State, S Symbol] struct {
 }
 
 // NewValidatingProcessor creates a new validating processor.
-func NewValidatingProcessor[Q State, S Symbol](wrapped Processor[Q, S], validator func([]S) error) *ValidatingProcessor[Q, S] {
+func NewValidatingProcessor[Q State, S Symbol](
+	wrapped Processor[Q, S],
+	validator func([]S) error,
+) *ValidatingProcessor[Q, S] {
 	return &ValidatingProcessor[Q, S]{
 		wrapped:   wrapped,
 		validator: validator,
@@ -271,8 +274,8 @@ func (p *ProcessorChain[Q, S]) Add(processor Processor[Q, S]) {
 
 // ProcessorRegistry manages different processor implementations.
 type ProcessorRegistry[Q State, S Symbol] struct {
-	processors map[string]Processor[Q, S]
-	default_   Processor[Q, S]
+	processors       map[string]Processor[Q, S]
+	defaultProcessor Processor[Q, S]
 }
 
 // NewProcessorRegistry creates a new processor registry.
@@ -302,10 +305,10 @@ func (r *ProcessorRegistry[Q, S]) Get(name string) (Processor[Q, S], bool) {
 
 // GetDefault returns the default processor.
 func (r *ProcessorRegistry[Q, S]) GetDefault() Processor[Q, S] {
-	return r.default_
+	return r.defaultProcessor
 }
 
 // SetDefault sets the default processor.
 func (r *ProcessorRegistry[Q, S]) SetDefault(processor Processor[Q, S]) {
-	r.default_ = processor
+	r.defaultProcessor = processor
 }

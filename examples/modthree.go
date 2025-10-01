@@ -7,9 +7,17 @@ import (
 	"github.com/dsonic0912/PolicyReporter-FSM/fsm"
 )
 
+// Modulo three remainders
+const (
+	RemainderZero = 0
+	RemainderOne  = 1
+	RemainderTwo  = 2
+)
+
 // ModThreeState represents states in the mod-three automaton.
 type ModThreeState string
 
+// States for the mod-three automaton
 const (
 	S0 ModThreeState = "S0" // Remainder 0
 	S1 ModThreeState = "S1" // Remainder 1
@@ -75,13 +83,13 @@ func ModThree(binaryString string) (int, error) {
 	finalState := fa.GetCurrentState()
 	switch finalState {
 	case S0:
-		return 0, nil
+		return RemainderZero, nil
 	case S1:
-		return 1, nil
+		return RemainderOne, nil
 	case S2:
-		return 2, nil
+		return RemainderTwo, nil
 	default:
-		return 0, fmt.Errorf("unexpected final state: %v", finalState)
+		return RemainderZero, fmt.Errorf("unexpected final state: %v", finalState)
 	}
 }
 

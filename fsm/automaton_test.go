@@ -288,7 +288,7 @@ func TestFiniteAutomaton_StringRepresentation(t *testing.T) {
 }
 
 // TestFiniteAutomaton_ConcurrentAccess tests thread safety (basic check)
-func TestFiniteAutomaton_ConcurrentAccess(t *testing.T) {
+func TestFiniteAutomaton_ConcurrentAccess(_ *testing.T) {
 	fa := New[string, rune]("q0").
 		AddStates("q0", "q1").
 		AddSymbol('a').

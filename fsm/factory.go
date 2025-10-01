@@ -116,8 +116,8 @@ func (b *OptimizedBuilder[Q, S]) MustBuild() Automaton[Q, S] {
 
 // FactoryRegistry manages different automaton factories.
 type FactoryRegistry[Q State, S Symbol] struct {
-	factories map[string]AutomatonFactory[Q, S]
-	default_  AutomatonFactory[Q, S]
+	factories      map[string]AutomatonFactory[Q, S]
+	defaultFactory AutomatonFactory[Q, S]
 }
 
 // NewFactoryRegistry creates a new factory registry.
@@ -147,22 +147,22 @@ func (r *FactoryRegistry[Q, S]) Get(name string) (AutomatonFactory[Q, S], bool) 
 
 // GetDefault returns the default factory.
 func (r *FactoryRegistry[Q, S]) GetDefault() AutomatonFactory[Q, S] {
-	return r.default_
+	return r.defaultFactory
 }
 
 // SetDefault sets the default factory.
 func (r *FactoryRegistry[Q, S]) SetDefault(factory AutomatonFactory[Q, S]) {
-	r.default_ = factory
+	r.defaultFactory = factory
 }
 
 // CreateAutomaton creates an automaton using the default factory.
 func (r *FactoryRegistry[Q, S]) CreateAutomaton(initialState Q) Automaton[Q, S] {
-	return r.default_.CreateAutomaton(initialState)
+	return r.defaultFactory.CreateAutomaton(initialState)
 }
 
 // CreateBuilder creates a builder using the default factory.
 func (r *FactoryRegistry[Q, S]) CreateBuilder(initialState Q) Builder[Q, S] {
-	return r.default_.CreateBuilder(initialState)
+	return r.defaultFactory.CreateBuilder(initialState)
 }
 
 // CreateAutomatonWith creates an automaton using a named factory.

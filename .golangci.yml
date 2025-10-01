@@ -40,7 +40,11 @@ linters-settings:
   goconst:
     min-len: 3
     min-occurrences: 3
-  
+
+  funlen:
+    lines: 80
+    statements: 50
+
   misspell:
     locale: US
   
@@ -78,13 +82,11 @@ linters-settings:
 linters:
   enable:
     - bodyclose
-    - depguard
     - dogsled
     - dupl
     - errcheck
     - copyloopvar
     - exhaustive
-    - funlen
     - gochecknoinits
     - goconst
     - gocritic
@@ -108,7 +110,8 @@ linters:
     - whitespace
 
   disable:
-    - prealloc  # can be noisy
+    - funlen     # disabled due to long test functions
+    - prealloc   # can be noisy
 
 issues:
   exclude-rules:

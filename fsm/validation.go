@@ -6,6 +6,17 @@ import (
 	"strings"
 )
 
+// Default validation limits
+const (
+	DefaultMaxStates       = 1000
+	DefaultMaxAlphabetSize = 100
+	DefaultMaxTransitions  = 10000
+	StrictMaxStates        = 100
+	StrictMaxAlphabetSize  = 50
+	StrictMaxTransitions   = 1000
+	MaxStateNameLength     = 50
+)
+
 // ValidationRule represents a validation rule for automaton construction.
 type ValidationRule[Q State, S Symbol] func(*FiniteAutomaton[Q, S]) error
 
@@ -27,9 +38,9 @@ type ValidatorConfig struct {
 func DefaultValidatorConfig() ValidatorConfig {
 	return ValidatorConfig{
 		StrictMode:                 false,
-		MaxStates:                  1000,
-		MaxAlphabetSize:            100,
-		MaxTransitions:             10000,
+		MaxStates:                  DefaultMaxStates,
+		MaxAlphabetSize:            DefaultMaxAlphabetSize,
+		MaxTransitions:             DefaultMaxTransitions,
 		RequireCompleteTransitions: false,
 	}
 }
@@ -38,9 +49,9 @@ func DefaultValidatorConfig() ValidatorConfig {
 func StrictValidatorConfig() ValidatorConfig {
 	return ValidatorConfig{
 		StrictMode:                 true,
-		MaxStates:                  100,
-		MaxAlphabetSize:            50,
-		MaxTransitions:             1000,
+		MaxStates:                  StrictMaxStates,
+		MaxAlphabetSize:            StrictMaxAlphabetSize,
+		MaxTransitions:             StrictMaxTransitions,
 		RequireCompleteTransitions: true,
 	}
 }
@@ -169,7 +180,9 @@ func validateTransitionSymbolsInAlphabet[Q State, S Symbol](automaton *FiniteAut
 func validateMaxStates[Q State, S Symbol](maxStates int) ValidationRule[Q, S] {
 	return func(automaton *FiniteAutomaton[Q, S]) error {
 		if len(automaton.states) > maxStates {
-			return NewValidationError(fmt.Sprintf("number of states (%d) exceeds maximum allowed (%d)", len(automaton.states), maxStates))
+			return NewValidationError(fmt.Sprintf(
+				"number of states (%d) exceeds maximum allowed (%d)",
+				len(automaton.states), maxStates))
 		}
 		return nil
 	}
@@ -178,7 +191,9 @@ func validateMaxStates[Q State, S Symbol](maxStates int) ValidationRule[Q, S] {
 func validateMaxAlphabetSize[Q State, S Symbol](maxSize int) ValidationRule[Q, S] {
 	return func(automaton *FiniteAutomaton[Q, S]) error {
 		if len(automaton.alphabet) > maxSize {
-			return NewValidationError(fmt.Sprintf("alphabet size (%d) exceeds maximum allowed (%d)", len(automaton.alphabet), maxSize))
+			return NewValidationError(fmt.Sprintf(
+				"alphabet size (%d) exceeds maximum allowed (%d)",
+				len(automaton.alphabet), maxSize))
 		}
 		return nil
 	}
@@ -191,7 +206,9 @@ func validateMaxTransitions[Q State, S Symbol](maxTransitions int) ValidationRul
 			totalTransitions += len(transitions)
 		}
 		if totalTransitions > maxTransitions {
-			return NewValidationError(fmt.Sprintf("number of transitions (%d) exceeds maximum allowed (%d)", totalTransitions, maxTransitions))
+			return NewValidationError(fmt.Sprintf(
+				"number of transitions (%d) exceeds maximum allowed (%d)",
+				totalTransitions, maxTransitions))
 		}
 		return nil
 	}
@@ -265,11 +282,15 @@ func validateStateNaming[Q State, S Symbol](automaton *FiniteAutomaton[Q, S]) er
 			}
 
 			if strings.Contains(stateStr, " ") && len(strings.Fields(stateStr)) > 1 {
-				return NewValidationError(fmt.Sprintf("state name '%s' contains multiple words (consider using underscores)", stateStr))
+				return NewValidationError(fmt.Sprintf(
+					"state name '%s' contains multiple words (consider using underscores)",
+					stateStr))
 			}
 
-			if len(stateStr) > 50 {
-				return NewValidationError(fmt.Sprintf("state name '%s' is too long (max 50 characters)", stateStr))
+			if len(stateStr) > MaxStateNameLength {
+				return NewValidationError(fmt.Sprintf(
+					"state name '%s' is too long (max %d characters)",
+					stateStr, MaxStateNameLength))
 			}
 		}
 	}

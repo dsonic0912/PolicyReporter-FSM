@@ -165,7 +165,7 @@ func TestProcessorRegistry(t *testing.T) {
 	customProcessor := NewOptimizedProcessor[string, rune]()
 	registry.Register("optimized", customProcessor)
 
-	processor, exists = registry.Get("optimized")
+	_, exists = registry.Get("optimized")
 	if !exists {
 		t.Error("Registry should have optimized processor after registration")
 	}

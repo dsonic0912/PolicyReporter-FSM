@@ -57,21 +57,21 @@ func NewMetricsObserver[Q State, S Symbol]() *MetricsObserver[Q, S] {
 }
 
 // OnStateChange increments transition count.
-func (o *MetricsObserver[Q, S]) OnStateChange(from Q, symbol S, to Q) {
+func (o *MetricsObserver[Q, S]) OnStateChange(_ Q, _ S, _ Q) {
 	o.mutex.Lock()
 	defer o.mutex.Unlock()
 	o.transitionCount++
 }
 
 // OnInputProcessed increments input processing count.
-func (o *MetricsObserver[Q, S]) OnInputProcessed(input []S, accepted bool) {
+func (o *MetricsObserver[Q, S]) OnInputProcessed(_ []S, _ bool) {
 	o.mutex.Lock()
 	defer o.mutex.Unlock()
 	o.inputsProcessed++
 }
 
 // OnError does nothing for metrics observer.
-func (o *MetricsObserver[Q, S]) OnError(err error) {
+func (o *MetricsObserver[Q, S]) OnError(_ error) {
 	// Metrics observer doesn't handle errors
 }
 
@@ -302,27 +302,32 @@ func (oa *ObservableAutomaton[Q, S]) NotifyObservers() {
 	// This method is part of the interface but not used in this implementation
 }
 
-// Delegate methods to wrapped automaton
+// GetInitialState returns the initial state of the wrapped automaton.
 func (oa *ObservableAutomaton[Q, S]) GetInitialState() Q {
 	return oa.automaton.GetInitialState()
 }
 
+// GetCurrentState returns the current state of the wrapped automaton.
 func (oa *ObservableAutomaton[Q, S]) GetCurrentState() Q {
 	return oa.automaton.GetCurrentState()
 }
 
+// Reset resets the wrapped automaton to its initial state.
 func (oa *ObservableAutomaton[Q, S]) Reset() {
 	oa.automaton.Reset()
 }
 
+// IsAcceptingState checks if the given state is an accepting state.
 func (oa *ObservableAutomaton[Q, S]) IsAcceptingState(state Q) bool {
 	return oa.automaton.IsAcceptingState(state)
 }
 
+// IsCurrentStateAccepting checks if the current state is an accepting state.
 func (oa *ObservableAutomaton[Q, S]) IsCurrentStateAccepting() bool {
 	return oa.automaton.IsCurrentStateAccepting()
 }
 
+// Step processes a single symbol and notifies observers of state changes.
 func (oa *ObservableAutomaton[Q, S]) Step(symbol S) (Q, error) {
 	from := oa.automaton.GetCurrentState()
 	to, err := oa.automaton.Step(symbol)
@@ -336,6 +341,7 @@ func (oa *ObservableAutomaton[Q, S]) Step(symbol S) (Q, error) {
 	return to, nil
 }
 
+// ProcessInput processes an input sequence and notifies observers.
 func (oa *ObservableAutomaton[Q, S]) ProcessInput(input []S) (bool, error) {
 	accepted, err := oa.automaton.ProcessInput(input)
 
@@ -348,6 +354,7 @@ func (oa *ObservableAutomaton[Q, S]) ProcessInput(input []S) (bool, error) {
 	return accepted, err
 }
 
+// ProcessInputWithTrace processes input and returns the state trace along with observers notification.
 func (oa *ObservableAutomaton[Q, S]) ProcessInputWithTrace(input []S) ([]Q, bool, error) {
 	trace, accepted, err := oa.automaton.ProcessInputWithTrace(input)
 
@@ -360,6 +367,7 @@ func (oa *ObservableAutomaton[Q, S]) ProcessInputWithTrace(input []S) ([]Q, bool
 	return trace, accepted, err
 }
 
+// Validate validates the wrapped automaton.
 func (oa *ObservableAutomaton[Q, S]) Validate() error {
 	return oa.automaton.Validate()
 }
