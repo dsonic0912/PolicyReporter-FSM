@@ -13,7 +13,7 @@ GOLINT=golangci-lint
 # Project parameters
 BINARY_NAME=policyreporter-fsm
 BINARY_UNIX=$(BINARY_NAME)_unix
-MAIN_PATH=./main.go
+MAIN_PATH=./cmd/policyreporter-fsm
 COVERAGE_FILE=coverage.out
 COVERAGE_HTML=coverage.html
 

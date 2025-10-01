@@ -10,7 +10,7 @@ before:
 
 builds:
   - id: policyreporter-fsm
-    main: ./main.go
+    main: ./cmd/policyreporter-fsm
     binary: policyreporter-fsm
     env:
       - CGO_ENABLED=0

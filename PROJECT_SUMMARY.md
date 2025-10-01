@@ -48,7 +48,7 @@ A complete implementation of the modulo-three calculation using the FSM library.
 
 ### 3. Demo Application
 
-**File:** `main.go`
+**File:** `cmd/policyreporter-fsm/main.go`
 - Demonstrates the library usage
 - Shows the specification example ("110" → 0)
 - Displays automaton configuration
@@ -240,20 +240,23 @@ fa := fsm.NewBuilder[YourStateType, YourSymbolType](initialState).
 
 ```
 .
-├── fsm/                      # Generic FSM library
-│   ├── automaton.go         # Core implementation
-│   ├── builder.go           # Builder pattern
-│   ├── automaton_test.go    # Core tests
-│   ├── builder_test.go      # Builder tests
-│   └── README.md            # Library API docs
-├── examples/                # Example implementations
-│   ├── modthree.go         # Mod-three implementation
-│   └── modthree_test.go    # Example tests
-├── main.go                  # Demo application
-├── go.mod                   # Module definition
-├── README.md                # Main documentation
-├── LIBRARY_USAGE.md         # Developer guide
-└── PROJECT_SUMMARY.md       # This file
+├── cmd/                     # Command-line applications
+│   └── policyreporter-fsm/ # Main demo application
+│       ├── main.go         # Demo application entry point
+│       └── main_test.go    # Demo application tests
+├── fsm/                     # Generic FSM library
+│   ├── automaton.go        # Core implementation
+│   ├── builder.go          # Builder pattern
+│   ├── automaton_test.go   # Core tests
+│   ├── builder_test.go     # Builder tests
+│   └── README.md           # Library API docs
+├── examples/               # Example implementations
+│   ├── modthree.go        # Mod-three implementation
+│   └── modthree_test.go   # Example tests
+├── go.mod                  # Module definition
+├── README.md               # Main documentation
+├── LIBRARY_USAGE.md        # Developer guide
+└── PROJECT_SUMMARY.md      # This file
 ```
 
 ## Key Achievements
