@@ -1,0 +1,181 @@
+# GoReleaser configuration
+# See: https://goreleaser.com/customization/
+
+project_name: policyreporter-fsm
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: policyreporter-fsm
+    main: ./main.go
+    binary: policyreporter-fsm
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+      - -X main.builtBy=goreleaser
+    flags:
+      - -trimpath
+
+archives:
+  - id: default
+    builds:
+      - policyreporter-fsm
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - README.md
+      - LICENSE
+      - CHANGELOG.md
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^chore:'
+      - '^style:'
+      - '^refactor:'
+      - Merge pull request
+      - Merge branch
+      - go mod tidy
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: 'Performance improvements'
+      regexp: "^.*perf[(\\w)]*:+.*$"
+      order: 2
+    - title: Others
+      order: 999
+
+dockers:
+  - image_templates:
+      - "dsonic0912/policyreporter-fsm:latest"
+      - "dsonic0912/policyreporter-fsm:{{ .Tag }}"
+      - "dsonic0912/policyreporter-fsm:v{{ .Major }}"
+      - "dsonic0912/policyreporter-fsm:v{{ .Major }}.{{ .Minor }}"
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--label=org.opencontainers.image.source={{.GitURL}}"
+      - "--platform=linux/amd64"
+
+release:
+  github:
+    owner: dsonic0912
+    name: PolicyReporter-FSM
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## PolicyReporter-FSM {{.Tag}}
+    
+    This release includes improvements to the finite state machine library.
+  footer: |
+    ## Docker Images
+    
+    Docker images are available at:
+    - `dsonic0912/policyreporter-fsm:{{.Tag}}`
+    - `dsonic0912/policyreporter-fsm:latest`
+    
+    ## Installation
+    
+    ### Binary
+    Download the appropriate binary for your platform from the assets below.
+    
+    ### Go Install
+    ```bash
+    go install github.com/dsonic0912/PolicyReporter-FSM@{{.Tag}}
+    ```
+    
+    ### Docker
+    ```bash
+    docker pull dsonic0912/policyreporter-fsm:{{.Tag}}
+    ```
+
+brews:
+  - name: policyreporter-fsm
+    tap:
+      owner: dsonic0912
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/dsonic0912/PolicyReporter-FSM
+    description: "A generic finite state machine library for Go"
+    license: MIT
+    test: |
+      system "#{bin}/policyreporter-fsm --version"
+    install: |
+      bin.install "policyreporter-fsm"
+
+nfpms:
+  - id: packages
+    package_name: policyreporter-fsm
+    file_name_template: "{{ .ConventionalFileName }}"
+    vendor: dsonic0912
+    homepage: https://github.com/dsonic0912/PolicyReporter-FSM
+    maintainer: dsonic0912 <dsonic0912@example.com>
+    description: |-
+      A generic finite state machine library for Go.
+      Provides a production-ready, type-safe implementation of finite automata.
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    dependencies:
+      - git
+    recommends:
+      - golang
+
+publishers:
+  - name: fury.io
+    ids:
+      - packages
+    dir: "{{ dir .ArtifactPath }}"
+    cmd: curl -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/dsonic0912/
+
+milestones:
+  - close: true
+    fail_on_error: false
+    name_template: "{{ .Tag }}"

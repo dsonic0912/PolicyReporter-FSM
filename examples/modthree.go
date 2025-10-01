@@ -3,6 +3,7 @@ package examples
 
 import (
 	"fmt"
+
 	"github.com/dsonic0912/PolicyReporter-FSM/fsm"
 )
 
@@ -18,15 +19,16 @@ const (
 // NewModThreeAutomaton creates a finite automaton that computes modulo 3 of binary numbers.
 //
 // Based on the formal definition:
-//   Q = {S0, S1, S2}
-//   Σ = {'0', '1'}
-//   q0 = S0
-//   F = {S0, S1, S2} (all states are accepting)
-//   δ is defined by the transition table:
-//     δ(S0, '0') = S0; δ(S0, '1') = S1
-//     δ(S1, '0') = S2; δ(S1, '1') = S0
-//     δ(S2, '0') = S1; δ(S2, '1') = S2
-func NewModThreeAutomaton() *fsm.FiniteAutomaton[ModThreeState, rune] {
+//
+//	Q = {S0, S1, S2}
+//	Σ = {'0', '1'}
+//	q0 = S0
+//	F = {S0, S1, S2} (all states are accepting)
+//	δ is defined by the transition table:
+//	  δ(S0, '0') = S0; δ(S0, '1') = S1
+//	  δ(S1, '0') = S2; δ(S1, '1') = S0
+//	  δ(S2, '0') = S1; δ(S2, '1') = S2
+func NewModThreeAutomaton() fsm.Automaton[ModThreeState, rune] {
 	return fsm.NewBuilder[ModThreeState, rune](S0).
 		// Q: Set of states
 		WithStates(S0, S1, S2).
@@ -135,4 +137,3 @@ func PrintModThreeTrace(binaryString string) {
 	fmt.Printf("Print output value (output for state %s = %d) <---- This is the answer\n",
 		trace[len(trace)-1], result)
 }
-
