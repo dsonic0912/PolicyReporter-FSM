@@ -1,5 +1,7 @@
-# Configuration for golangci-lint
+# Configuration for golangci-lint v2
 # See: https://golangci-lint.run/usage/configuration/
+
+version: 2
 
 run:
   timeout: 5m
@@ -30,13 +32,9 @@ linters-settings:
   gocyclo:
     min-complexity: 15
   
-  gofmt:
-    simplify: true
+
   
-  goimports:
-    local-prefixes: github.com/dsonic0912/PolicyReporter-FSM
-  
-  golint:
+  revive:
     min-confidence: 0.8
   
   goconst:
@@ -80,47 +78,36 @@ linters-settings:
 linters:
   enable:
     - bodyclose
-    - deadcode
     - depguard
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
+    - copyloopvar
     - exhaustive
     - funlen
     - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
-    - gofmt
-    - goimports
-    - golint
-    - gomnd
+    - revive
+    - mnd
     - goprintffuncname
     - gosec
-    - gosimple
     - govet
     - ineffassign
-    - interfacer
     - lll
     - misspell
     - nakedret
     - noctx
     - nolintlint
     - rowserrcheck
-    - scopelint
     - staticcheck
-    - structcheck
-    - stylecheck
-    - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
-  
+
   disable:
-    - maligned  # deprecated
     - prealloc  # can be noisy
 
 issues:
@@ -144,10 +131,10 @@ issues:
       linters:
         - govet
     
-    # Exclude certain golint issues
+    # Exclude certain revive issues
     - text: "should have a package comment"
       linters:
-        - golint
+        - revive
   
   exclude-use-default: false
   max-issues-per-linter: 0
@@ -157,10 +144,3 @@ issues:
 severity:
   default-severity: error
   case-sensitive: false
-  rules:
-    - linters:
-        - dupl
-      severity: info
-    - linters:
-        - gocritic
-      severity: warning
